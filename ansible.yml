@@ -1,16 +1,26 @@
 - hosts: localhost
   tasks:
+    - name: Install required apt packages
+      become: yes
+      ansible.builtin.apt:
+        pkg:
+          - stow
+          - tmux
+          - fzf
+          - zsh
+    - name: Install nvm
+      shell: curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+    - name: Install lts version of node
+      shell: source ../.nvm/nvm.sh && nvm install --lts 
+      args:
+        executable: /bin/bash
     - name: Stow the files into $HOME
       shell: stow --adopt nvim tmux zsh 
-    - name: Install zsh
-      apt: name=zsh
     - name: Install nvim
-      shell: curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz && sudo rm -rf /opt/nvim && sudo tar -C /opt -xzf nvim-linux64.tar.gz
+      shell: curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz &&  rm -rf /opt/nvim && tar -C /opt -xzf nvim-linux64.tar.gz
     - name: Cleanup archive
       shell: rm -rf nvim-linux64.tar.gz
     - name: Install tpm
       shell: rm -rf ~/.tmux/plugins/tpm && git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
     - name: Change shell
-      shell: chsh -s `which zsh`
-    - name: Install antigen
-      shell: curl -L git.io/antigen > antigen.zsh 
+      shell: curl -L git.io/antigen > ../antigen.zsh 
